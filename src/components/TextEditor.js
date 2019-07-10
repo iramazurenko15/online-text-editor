@@ -1,11 +1,15 @@
 import React, { Component, Fragment } from 'react';
 import { Editor } from 'slate-react';
 import { Value } from 'slate';
-import { BoldMark, ItalicMark, FormatToolbar } from './index';
+import { FormatToolbar } from './index';
 import Icon from 'react-icons-kit';
 import { bold } from 'react-icons-kit/feather/bold';
 import { italic } from 'react-icons-kit/feather/italic';
-import { tsExpressionWithTypeArguments } from '@babel/types';
+import { underline } from 'react-icons-kit/feather/underline';
+import { code } from 'react-icons-kit/feather/code';
+import { list } from 'react-icons-kit/feather/list';
+
+
 
 
 const initialValue = Value.fromJSON({
@@ -31,6 +35,7 @@ export default class TextEditor extends Component {
     }
 
     ref = (editor) => {
+        console.log(editor, '----editor');
         this.editor = editor;
     }
 
@@ -51,6 +56,12 @@ export default class TextEditor extends Component {
             case 'i': {
                 change.toggleMark('italic')
             }
+            case 'u': {
+                change.toggleMark('underline')
+            }
+            case 'l': {
+                change.toggleMark('list')
+            }
         }
     }
 
@@ -64,10 +75,36 @@ export default class TextEditor extends Component {
     renderMark = props => {
         console.log(props, '--props');
         switch (props.mark.type) {
-            case 'bold':
-                return <BoldMark  {...props} />
-            case 'italic':
-                return <ItalicMark {...props} />
+            case 'bold': {
+                return (
+                    <strong>{props.children}</strong>
+                )
+
+            }
+            case 'italic': {
+                return (
+                    <em property='italic'>{props.children}</em >
+                )
+            }
+            case 'underline': {
+                console.log('underline');
+                return (
+                    <span style={{ textDecoration: 'underline' }
+                    }>{props.children}</span >
+                )
+            }
+            case 'list': {
+                return (
+                    <ul {...props.attributes}>
+                        <li>{props.children}</li>
+                    </ul>
+                )
+            }
+            case 'code': {
+                return (
+                    <code>{props.children}</code>
+                )
+            }
 
         }
     }
@@ -87,6 +124,24 @@ export default class TextEditor extends Component {
                         className="tooltip-icon-button"
                     >
                         <Icon icon={italic} />
+                    </button>
+                    <button
+                        onPointerDown={(e) => this.onMarkClick(e, 'underline')}
+                        className="tooltip-icon-button"
+                    >
+                        <Icon icon={underline} />
+                    </button>
+                    <button
+                        onPointerDown={(e) => this.onMarkClick(e, 'code')}
+                        className="tooltip-icon-button"
+                    >
+                        <Icon icon={code} />
+                    </button>
+                    <button
+                        onPointerDown={(e) => this.onMarkClick(e, 'list')}
+                        className="tooltip-icon-button"
+                    >
+                        <Icon icon={list} />
                     </button>
                 </FormatToolbar>
                 <Editor
