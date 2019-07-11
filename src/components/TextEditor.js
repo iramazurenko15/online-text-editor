@@ -1,15 +1,12 @@
 import React, { Component, Fragment } from 'react';
 import { Editor } from 'slate-react';
 import { Value } from 'slate';
-import { FormatToolbar } from './index';
-import Icon from 'react-icons-kit';
+import { ToolbarButton } from './index';
 import { bold } from 'react-icons-kit/feather/bold';
 import { italic } from 'react-icons-kit/feather/italic';
 import { underline } from 'react-icons-kit/feather/underline';
 import { code } from 'react-icons-kit/feather/code';
 import { list } from 'react-icons-kit/feather/list';
-
-
 
 
 const initialValue = Value.fromJSON({
@@ -30,37 +27,47 @@ const initialValue = Value.fromJSON({
 })
 
 export default class TextEditor extends Component {
+
     state = {
         value: initialValue,
+        iconsArr: [{ type: 'bold', icon: bold }, { type: 'italic', icon: italic }, { type: 'underline', icon: underline },
+        { type: 'list', icon: list }, { type: 'code', icon: code }]
     }
 
-    ref = (editor) => {
-        console.log(editor, '----editor');
-        this.editor = editor;
+    hasMark = type => {
+        const { value } = this.state;
+        return value.activeMarks.some(mark => mark.type === type)
     }
 
     onChange = ({ value }) => {
         this.setState({ value })
     }
 
-    onKeyDown = (e, change) => {
-        console.log(change, '--change');
+    onKeyDown = (e, editor) => {
+        console.log(editor, 'editor');
+
         if (!e.ctrlKey) { return };
-        e.preventDefault();
 
         switch (e.key) {
             case 'b': {
-                change.toggleMark('bold')
+                e.preventDefault();
+                editor.toggleMark('bold')
                 return true
             }
             case 'i': {
-                change.toggleMark('italic')
+                e.preventDefault();
+                editor.toggleMark('italic')
+                return true
             }
             case 'u': {
-                change.toggleMark('underline')
+                e.preventDefault();
+                editor.toggleMark('underline')
+                return true
             }
             case 'l': {
-                change.toggleMark('list')
+                e.preventDefault();
+                editor.toggleMark('list')
+                return true
             }
         }
     }
@@ -68,18 +75,18 @@ export default class TextEditor extends Component {
     onMarkClick = (e, type) => {
         e.preventDefault();
         this.editor.toggleMark(type);
+
     }
 
 
 
     renderMark = props => {
-        console.log(props, '--props');
+        console.log(props)
         switch (props.mark.type) {
             case 'bold': {
                 return (
                     <strong>{props.children}</strong>
                 )
-
             }
             case 'italic': {
                 return (
@@ -87,7 +94,6 @@ export default class TextEditor extends Component {
                 )
             }
             case 'underline': {
-                console.log('underline');
                 return (
                     <span style={{ textDecoration: 'underline' }
                     }>{props.children}</span >
@@ -105,51 +111,31 @@ export default class TextEditor extends Component {
                     <code>{props.children}</code>
                 )
             }
-
         }
     }
 
     render() {
         return (
             <Fragment>
-                <FormatToolbar>
-                    <button
-                        onPointerDown={(e) => this.onMarkClick(e, 'bold')}
-                        className="tooltip-icon-button"
-                    >
-                        <Icon icon={bold} />
-                    </button>
-                    <button
-                        onPointerDown={(e) => this.onMarkClick(e, 'italic')}
-                        className="tooltip-icon-button"
-                    >
-                        <Icon icon={italic} />
-                    </button>
-                    <button
-                        onPointerDown={(e) => this.onMarkClick(e, 'underline')}
-                        className="tooltip-icon-button"
-                    >
-                        <Icon icon={underline} />
-                    </button>
-                    <button
-                        onPointerDown={(e) => this.onMarkClick(e, 'code')}
-                        className="tooltip-icon-button"
-                    >
-                        <Icon icon={code} />
-                    </button>
-                    <button
-                        onPointerDown={(e) => this.onMarkClick(e, 'list')}
-                        className="tooltip-icon-button"
-                    >
-                        <Icon icon={list} />
-                    </button>
-                </FormatToolbar>
+                <div className="format-toolbar">
+                    {this.state.iconsArr.map(item => {
+                        return (
+                            <ToolbarButton
+                                type={item.type}
+                                icon={item.icon}
+                                onMarkClick={this.onMarkClick}
+                                hasMark={this.hasMark}
+                            />
+                        )
+                    })}
+                </div>
+
                 <Editor
                     value={this.state.value}
                     onChange={this.onChange}
                     onKeyDown={this.onKeyDown}
                     renderMark={this.renderMark}
-                    ref={this.ref}
+                    ref={editor => this.editor = editor}
                 />
             </Fragment>
 

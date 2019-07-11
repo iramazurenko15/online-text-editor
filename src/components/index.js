@@ -1,3 +1,3 @@
 import TextEditor from './TextEditor';
-import FormatToolbar from './FormatToolbar';
-export { TextEditor, FormatToolbar };
+import ToolbarButton from './ToolbarButton';
+export { TextEditor, ToolbarButton };
