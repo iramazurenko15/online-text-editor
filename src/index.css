@@ -4,7 +4,9 @@ body {
     min-height: 100vh;
     background: #ebebeb
 }
-
+ button {
+     outline: none
+ }
 .App {
     background: #fff;
     max-width: 760px;

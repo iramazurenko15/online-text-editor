@@ -51,8 +51,12 @@ export default class TextEditor extends Component {
     }
 
     hasBlock = type => {
-        const { value } = this.state
-        return value.blocks.some(node => node.type === type)
+        //  console.log(type, '----type');
+        const { value } = this.state;
+        return value.blocks.some(node => {
+            // console.log(node.type, '--node.type');
+            return node.type === type
+        })
     }
 
     onChange = ({ value }) => {
@@ -84,35 +88,29 @@ export default class TextEditor extends Component {
         const { editor } = this
         const { value } = editor
         const { document } = value
-        const isActive = this.hasBlock(type);
+
         if (type === 'bulleted-list') {
             const isList = this.hasBlock('list-item');
-            console.log(isList, '---isList')
             const isType = value.blocks.some(block => {
                 return !!document.getClosest(block.key, parent => parent.type === type)
             })
 
-            console.log(isType, '--isType');
-
             if (isList && isType) {
-                console.log('1');
                 editor
                     .setBlocks(DEFAULT_NODE)
                     .unwrapBlock('bulleted-list')
             } else if (isList) {
-                console.log('2');
                 editor
                     .unwrapBlock('bulleted-list')
                     .wrapBlock(type)
             } else {
-                console.log('3');
                 editor.setBlocks('list-item').wrapBlock(type)
             }
         }
 
         else if (type === "heading-one" || type === "heading-two") {
+            const isActive = this.hasBlock(type);
             editor.setBlocks(isActive ? DEFAULT_NODE : type)
-
         }
         else {
             editor.toggleMark(type)
@@ -155,7 +153,6 @@ export default class TextEditor extends Component {
             case 'bulleted-list':
                 return <ul {...attributes}>{children}</ul>
             case 'list-item':
-                console.log('list-item');
                 return <li {...attributes}>{children}</li>
             case 'heading-one':
                 return <h1 {...attributes}>{children}</h1>
